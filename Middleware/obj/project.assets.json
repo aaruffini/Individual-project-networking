@@ -1,0 +1,192 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "libplctag/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "libplctag.NativeImport": "1.0.41"
+        },
+        "compile": {
+          "lib/netstandard2.0/libplctag.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/libplctag.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "libplctag.NativeImport/1.0.41": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/libplctag.NativeImport.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/libplctag.NativeImport.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    },
+    "net9.0/win-x64": {
+      "libplctag/1.5.2": {
+        "type": "package",
+        "dependencies": {
+          "libplctag.NativeImport": "1.0.41"
+        },
+        "compile": {
+          "lib/netstandard2.0/libplctag.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/libplctag.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "libplctag.NativeImport/1.0.41": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/libplctag.NativeImport.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/libplctag.NativeImport.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "libplctag/1.5.2": {
+      "sha512": "v16WtxKMr6YiPc/ws5C/MdhOvZgLrlDwJ1FQPB4PLrWNpBQXr8fUXaHI12rl3sNyJZ2ocB+zeSPUDFT8zK4pDA==",
+      "type": "package",
+      "path": "libplctag/1.5.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/netstandard2.0/libplctag.dll",
+        "lib/netstandard2.0/libplctag.xml",
+        "libplctag.1.5.2.nupkg.sha512",
+        "libplctag.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "libplctag.NativeImport/1.0.41": {
+      "sha512": "cm7TXwCMg4lALRtP/XJzxI4db9qYcRPB7kglPfDOqiNE1PQ4O/gOC5KPCwoGhIw07FBKvVDnl5sjbXS3iK2tEw==",
+      "type": "package",
+      "path": "libplctag.nativeimport/1.0.41",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/netstandard2.0/libplctag.NativeImport.dll",
+        "lib/netstandard2.0/libplctag.NativeImport.xml",
+        "libplctag.nativeimport.1.0.41.nupkg.sha512",
+        "libplctag.nativeimport.nuspec",
+        "packageIcon.png"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "libplctag >= 1.5.2"
+    ]
+  },
+  "packageFolders": {
+    "/Users/alexruffini/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/alexruffini/Individual Project/Networking Code/Individual-project-networking/Middleware/Middleware.csproj",
+      "projectName": "Middleware",
+      "projectPath": "/Users/alexruffini/Individual Project/Networking Code/Individual-project-networking/Middleware/Middleware.csproj",
+      "packagesPath": "/Users/alexruffini/.nuget/packages/",
+      "outputPath": "/Users/alexruffini/Individual Project/Networking Code/Individual-project-networking/Middleware/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/alexruffini/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "/usr/local/share/dotnet/library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "libplctag": {
+            "target": "Package",
+            "version": "[1.5.2, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[9.0.12, 9.0.12]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[9.0.12, 9.0.12]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[9.0.12, 9.0.12]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.310/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
+      }
+    }
+  }
+}
