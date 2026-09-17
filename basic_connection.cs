@@ -1,7 +1,7 @@
 // Example tag configuration for a global DINT tag in an Allen-Bradley CompactLogix/ControlLogix PLC
 var myTag = new TagDint()
 {
-    Name = "SomeDINT",
+    Name = "PB_1",
     Gateway = "10.10.10.10",
     Path = "1,0",
     PlcType = PlcType.ControlLogix,
