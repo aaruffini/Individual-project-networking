@@ -1,4 +1,5 @@
-﻿using libplctag;
+﻿using System.Net;
+using libplctag;
 using libplctag.DataTypes.Simple; // ai found this package for me
 
 // The code below is the starter code 
@@ -6,15 +7,24 @@ Console.WriteLine("Hello, World!");
 
 var myTag = new TagDint
 {
-    Name = "DINT_TEST",
-    Gateway = "10.10.10.10",
+    Name = "Program:MainProgram.DINT_TEST",
+    Gateway = "", // DO NOT COMMIT GATEWAY
     Path = "1,0",
     PlcType = PlcType.ControlLogix,
     Protocol = Protocol.ab_eip
 };
 // Read the value from the PLC and output to console
+int output;
+try
+{
+    output = myTag.Read();
+}
+catch (Exception)
+{
+    Console.WriteLine("Error reading tag!");
+    return;
+}
 
-int output = myTag.Read();
 Console.WriteLine($"Original value: {output}");
 
 
