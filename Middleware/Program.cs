@@ -3,13 +3,17 @@ using libplctag;
 using libplctag.DataTypes.Simple; // ai found this package for me
 
 // The code below is the starter code 
-Console.WriteLine("Hello, World!");
+Console.WriteLine("Hello! Welcome to the PLC Program");
+Console.WriteLine("Please enter the path needed of of the variable ");
+string inputPath = Console.ReadLine();
+Console.WriteLine("Your input is: " + inputPath);
 
+// starter code brought up by PLC.
 var myTag = new TagDint
 {
     Name = "Program:MainProgram.DINT_TEST",
     Gateway = "", // DO NOT COMMIT GATEWAY
-    Path = "1,0",
+    Path = inputPath,
     PlcType = PlcType.ControlLogix,
     Protocol = Protocol.ab_eip
 };
