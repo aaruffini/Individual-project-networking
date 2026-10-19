@@ -1,5 +1,8 @@
 Middleware/bin
 Middleware/obj
-Middleware/publish
+Middleware/publish/
+Middleware/publish.zip
+Middleware/updated_ip.zip
+Middleware/while_true.zip
 .DS_Store
 .DS_Store
