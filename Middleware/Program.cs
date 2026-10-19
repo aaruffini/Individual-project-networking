@@ -1,33 +1,114 @@
-﻿using System.Net;
+﻿using System;
 using libplctag;
+using System.Net;
+using System.Threading.Tasks;
+using System.Text.Json;
 using libplctag.DataTypes.Simple; // ai found this package for me
 
-// The code below is the starter code 
-Console.WriteLine("Hello! Welcome to the PLC Program");
-Console.WriteLine("Please enter your tag's name ");
-string name = Console.ReadLine();
-Console.WriteLine("The name of the tag is " + name);
-Console.WriteLine("Enter first variable of input path");
-string inputPath = Console.ReadLine();
-inputPath += ",";
-Console.WriteLine("Please enter the second number of the variable's path ");
-inputPath += Console.ReadLine();
-Console.WriteLine("Your input is: " + inputPath);
+Console.WriteLine("Starting Ride Middleware Service...");
 
-// starter code brought up by PLC.
-var myTag = new TagBool
+// Global state
+var rideState = new { PB_2_Value = false };
+
+// Start PLC reader in background
+var plcTask = Task.Run(() => ReadPLCContinuously());
+
+// Start REST API
+StartRestServer();
+
+Console.WriteLine("✓ Middleware running on http://localhost:8080");
+Console.WriteLine("✓ Access PB_2 state at: http://localhost:8080/api/state");
+
+// Keep running
+await Task.Delay(Timeout.Infinite);
+
+// Background task: continuously read from PLC
+async Task ReadPLCContinuously()
 {
-    Name = name,
-    Gateway = "", // DO NOT COMMIT GATEWAY
-    Path = inputPath,
-    PlcType = PlcType.ControlLogix,
-    Protocol = Protocol.ab_eip,
-    // timeout = 5000 //wrong need to consult documentation
-};
-// Read the value from the PLC and output to console
+    var myTag = new TagBool
+    {
+        Name = "Program:MainProgram.PB_2",
+        Gateway = "number",
+        Path = "1,0",
+        PlcType = PlcType.ControlLogix,
+        Protocol = Protocol.ab_eip,
+        Timeout = TimeSpan.FromMilliseconds(5000)
+    };
 
-Console.WriteLine("Reading tag... "  + myTag.Read());
-Console.WriteLine("Tag Type: " + myTag.GetType());
-// Write a new value to the PLC, then read it back, and output to console
-myTag.Write(true);
-Console.WriteLine($"Updated value: " + myTag.Read());
+    try
+    {
+        while (true)
+        {
+            try
+            {
+                myTag.Read();
+                rideState = new { PB_2_Value = myTag.Value };
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] PB_2: {rideState.PB_2_Value}");
+                await Task.Delay(30); // Read every 30ms (PLC cycle)
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"✗ PLC read error: {ex.Message}");
+                await Task.Delay(1000); // Retry after 1 second
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"✗ Fatal PLC error: {ex.Message}");
+    }
+}
+
+// REST API server
+void StartRestServer()
+{
+    var listener = new HttpListener();
+    listener.Prefixes.Add("http://localhost:8080/");
+    listener.Start();
+    Console.WriteLine("✓ REST server started");
+
+    Task.Run(async () =>
+    {
+        while (true)
+        {
+            try
+            {
+                HttpListenerContext context = listener.GetContext();
+                HttpListenerRequest request = context.Request;
+                HttpListenerResponse response = context.Response;
+
+                // Enable CORS (so Unity can call from browser)
+                response.AddHeader("Access-Control-Allow-Origin", "*");
+                response.AddHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+                response.AddHeader("Content-Type", "application/json");
+
+                if (request.HttpMethod == "OPTIONS")
+                {
+                    response.StatusCode = 200;
+                    response.Close();
+                    continue;
+                }
+
+                if (request.Url.AbsolutePath == "/api/state")
+                {
+                    string json = JsonSerializer.Serialize(rideState);
+                    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json);
+                    response.ContentType = "application/json";   // ← use the property
+                    response.ContentLength64 = buffer.Length;
+                    response.OutputStream.Write(buffer, 0, buffer.Length);
+                    response.StatusCode = 200;
+                }
+                else
+                {
+                    response.StatusCode = 404;
+                }
+
+                response.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"✗ REST error: {ex.Message}");
+            }
+        }
+    });
+}
