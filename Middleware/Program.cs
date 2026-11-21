@@ -7,10 +7,16 @@ using libplctag.DataTypes.Simple; // ai found this package for me
 
 Console.WriteLine("Starting Ride Middleware Service...");
 
-// Global state
+/*
+    *****************
+    *Global Variables*
+    ******************
+*/
 var rideState = new { PB_2_Value = false };
+var ridePower = new {SW_1_Value = false};
 
-// Start PLC reader in background
+
+
 var plcTask = Task.Run(() => ReadPLCContinuously());
 
 // Start REST API
