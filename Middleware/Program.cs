@@ -11,8 +11,55 @@ Console.WriteLine("Starting Ride Middleware Service...");
     *****************
     *Global Variables*
     ******************
+    PLC | What it does 
+    ** Inputs **
+   
+    ** Momentary Buttons **
+    PB1 -> Ride Start 
+    PB2 -> Ride Stop 
+    PB3 -> Ride Reset
+   
+    ** Selector Switches **
+    SW1 -> Ride Power
+    SW2 -> Ride Gates
+    
+    ** Dual Selector Switches **
+    Selector_Switch_3_Left ->  Ride Restraints
+    
+    ** Estop **
+    Estop1 -> Emergency Stop
+    
+    ** Physical Outputs **
+
+    ** Motors **
+    DC_Motor_1 -> Ride's Motor
+    DC_Motor_2 -> Ride's Break
+
+    ** Tower Light**
+    Tower_Light_Green -> Ride Running
+    Tower_Light_Red -> Ride Fault
+
+    ** Traffic Light **
+    Traf_Light_A_G ->
+    Traf_Light_A_Y ->
+    TrafLightGreenB
+    TrafLighYellB
+
+    **Conveyor Light** 
+    Conveyor_Line_A_Green -> Ride Cycle Done
+
+    ** Non-Physical Outputs **
+
+    ** Timer On Delay Timers **
+    Ride_Cycle -> Times the Ride's Cycle
+    Brakes -> Simulates applying the brakes
+
+    **
+
+    
 */
-var rideState = new { PB_2_Value = false };
+
+
 var ridePower = new {SW_1_Value = false};
 
 
