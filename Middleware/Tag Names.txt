@@ -1,0 +1,61 @@
+
+    *****************
+    *Global Variables*
+    ******************
+    PLC | What it does 
+    ** Inputs **
+   
+    ** Momentary Buttons **
+    PB_1 -> Ride Start 
+    PB_2 -> Ride Stop 
+    PB_3 -> Ride Reset
+   
+    ** Selector Switches **
+    SW_1 -> Ride Power
+    SW_2 -> Ride Gates
+    
+    ** Dual Selector Switches **
+    Selector_Switch_3_Left ->  Ride Restraints
+    
+    ** Estop **
+    Estop1 -> Emergency Stop
+
+    ** Outputs **
+    
+    ** Physical Outputs **
+
+    ** Motors **
+    DC_Motor_1 -> Ride's Motor
+    DC_Motor_2 -> Ride's Break
+
+    ** Tower Light**
+    Tower_Light_Green -> Ride Running
+    Tower_Light_Red -> Ride Fault
+
+    ** Traffic Light **
+    Traf_Light_A_G ->
+    Traf_Light_A_Y ->
+    TrafLightGreenB
+    TrafLighYellB
+
+    **Conveyor Light** 
+    Conveyor_Line_A_Green -> Ride Cycle Done
+
+    ** Non-Physical Outputs **
+
+    ** Timer On Delay Timers **
+    Ride_Cycle -> Times the Ride's Cycle
+    Ride_Cycle.TT -> Timing Bit
+    Ride_Cycle.DN -> Done Bit
+    Brakes -> Simulates applying the brakes
+    Brakes.TT -> Timing Bit
+    Brakes.DN -> Done
+
+    ** State Outputs/Inputs **
+    Ride_Power
+    Gates_Closed
+    Lap_Bar_Closed
+    Ride_Ready
+    Ride_Running
+    Fault_Detected
+    
