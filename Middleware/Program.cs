@@ -102,7 +102,7 @@ await Task.Delay(Timeout.Infinite);
 // Background task: continuously read from PLC
 async Task ReadPLCContinuously()
 {
-    List<TagBool> rideTags = new List<TagBool>;
+    List<TagBool> rideTags = new List<TagBool>();
 
     foreach(String currentName in rideBoolTagNames)
     {
@@ -146,7 +146,7 @@ async Task ReadPLCContinuously()
     }
 }
 
-// REST API server
+// REST API server (vibe coded)
 void StartRestServer()
 {
     var listener = new HttpListener();
