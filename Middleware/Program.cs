@@ -71,7 +71,7 @@ Console.WriteLine("Starting Ride Middleware Service...");
     
 */
 
-String[] systemTags =
+String[] rideBoolTags =
 {
     "PB_1", "PB_2", "PB_3",
     "SW_1", "SW_2", "Selector_Switch_3_Left",
@@ -80,8 +80,8 @@ String[] systemTags =
     "Traf_Light_A_G", "Traf_Light_A_Y",
     "TrafLightGreenB", "TrafLighYellB",
     "Conveyor_Line_A_Green",
-    "Ride_Cycle", " Ride_Cycle.TT", "Ride_Cycle.DN",
-    "Breaks", "Breaks.TT", "Breaks.DN",
+    "Ride_Cycle.TT", "Ride_Cycle.DN",
+    "Breaks.TT", "Breaks.DN",
     "Ride_Power", "Gates_Closed", "Lap_Bar_Closed",
     "Ride_Ready", "Ride_Running", "Fault_Detected"
 };
@@ -140,6 +140,7 @@ await Task.Delay(Timeout.Infinite);
 // Background task: continuously read from PLC
 async Task ReadPLCContinuously()
 {
+    for(String name : rideTags)
     var myTag = new TagBool
     {
         Name = "Program:MainProgram.PB_2",
