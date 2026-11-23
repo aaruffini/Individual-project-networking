@@ -87,44 +87,6 @@ String[] rideBoolTags =
 };
 var rideState = new System.Collections.Concurrent.ConcurrentDictionary<string, bool>();
 
-//  Buttons
-var pb1 = new{PB_1 = false}; //start
-var pb2 = new { PB_2 = false }; //stop
-var pb3 = new { PB_3 = false }; //reset fault
-var estop = new{ Estop1 = false}; // emergency stop
-
-// Switches
-var sw1 = new { SW_1 = false }; // ride power
-var sw2 = new { SW_2 = false }; // ride gates
-var ss3l = new {Selector_Switch_3_Left = false}; // lap bars
-
-// Motors
-var dc1 = new { DC_Motor_1 = false}; //  ride motor
-var dc2 = new { DC_Motor_2 = false }; // ride break
-
-// Lights
-var towLightG = new { Tower_Light_Green  = false}; // ride running light
-var towLightR= new { Tower_Light_Red = false}; // ride fault light
-var trafLightAG = new { Traf_Light_A_G  = false}; // ride power light
-var trafLightAY = new { TrafLighYellB = false}; // gates closed light
-var trafLightBG = new { TrafLightGreenB = false }; // ride is ready light
-var trafLightBY = new { Traf_Light_A_Y = false }; //  lap bar is locked light
-var convLightAG = new { Conveyor_Line_A_Green = false}; // ride is done light
-
-
-
-// ** State Inputs/Outputs **
-var ridePower = new {Ride_Power = false};
-var gatesClosed = new{Gates_Closed = false};
-var lapBarClosed = new{Lap_Bar_Closed = false};
-var rideRunning = new {Ride_Running = false};
-var faultDetected = new{Fault_Detected = false};
-
-// Timers
-var rideCycle = new { Ride_Cycle = false};
-var breaks = new {Breaks = false};
-
-
 
 var plcTask = Task.Run(() => ReadPLCContinuously());
 
