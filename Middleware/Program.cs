@@ -9,27 +9,21 @@ using System.Collections.Concurrent;
 
 Console.WriteLine("Starting Ride Middleware Service...");
 
-
-
-// String[] rideBoolTagNames =
-// {
-//     "PB_1", "PB_2", "PB_3",
-//     "SW_1", "SW_2", "Selector_Switch_3_Left",
-//     "DC_Motor_1", "DC_Motor_2",
-//     "Tower_Light_Green",  "Tower_Light_Red",
-//     "Traf_Light_A_G", "Traf_Light_A_Y",
-//     "TrafLightGreenB", "TrafLighYellB",
-//     "Conveyor_Line_A_Green",
-//     "Ride_Cycle.TT", "Ride_Cycle.DN",
-//     "Breaks.TT", "Breaks.DN",
-//     "Ride_Power", "Gates_Closed", "Lap_Bar_Closed",
-//     "Ride_Ready", "Ride_Running", "Fault_Detected"
-// };
+  
 
 String[] rideBoolTagNames =
 {
-    "PB_1", "PB_2", "PB_3"
-   
+    "PB_1", "PB_2", "PB_3",
+    "SW_1", "SW_2", "Selector_switch_4_NO_3",
+    "DC_Motor_1", "DC_Motor_2",
+    "Tower_Light_Green",  "Tower_Light_Red",
+    "Traf_Light_A_G", "Traf_Light_A_Y",
+    "TrafLightGreenB", "TrafLightYellB",
+    "Conveyor_Line_A_Green",
+    "Ride_Cycle.TT", "Ride_Cycle.DN",
+    "Brakes.TT", "Brakes.DN",
+    "Ride_Power", "Gates_Closed", "Lap_Bar_Locked",
+    "Ride_Ready", "Ride_Running", "Fault_detected"
 };
 
 ConcurrentDictionary<string, bool> rideState = new(StringComparer.OrdinalIgnoreCase);
@@ -48,20 +42,21 @@ await Task.Delay(Timeout.Infinite);
 // Background task: continuously read from PLC
 async Task ReadPLCContinuously()
 {
-    List<TagBool> rideTags = new List<TagBool>();
+    var rideTags = new List<(string currentName, TagBool Tag)>(); // ai suggestion
 
-    foreach(String currentName in rideBoolTagNames)
+    foreach (var currentName in rideBoolTagNames)
     {
-        var myTag = new TagBool
+
+        rideTags.Add((currentName, new TagBool
         {
             Name = "Program:MainProgram." + currentName,
-            Gateway = "example", // we know this works 
+            Gateway = "Secret", // we know this works 
             Path = "1,0",
             PlcType = PlcType.ControlLogix,
             Protocol = Protocol.ab_eip,
             Timeout = TimeSpan.FromMilliseconds(5000)
-        };
-        rideTags.Add(myTag);
+        }));
+       
     }
     
     try
@@ -71,11 +66,12 @@ async Task ReadPLCContinuously()
         {
             try
             {
-                foreach(TagBool currentTag in rideTags)
+                foreach(var (currentName, tag) in rideTags)
                 {
-                    currentTag.Read();
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}]", currentTag.Name, currentTag.Value);
-                    await Task.Delay(30); // Read every 30ms (PLC cycle)
+                    tag.Read();
+                    bool value = tag.Value;
+                    rideState[currentName] = value;
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {currentName} = {tag.Value}");
                 }
             }
             catch (Exception ex)
@@ -83,6 +79,7 @@ async Task ReadPLCContinuously()
                 Console.WriteLine($"✗ PLC read error: {ex.Message}");
                 await Task.Delay(1000); // Retry after 1 second
             }
+            await Task.Delay(30);
         }
     }
     catch (Exception ex)
