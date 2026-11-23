@@ -71,7 +71,7 @@ Console.WriteLine("Starting Ride Middleware Service...");
     
 */
 
-String[] rideBoolTags =
+String[] rideBoolTagNames =
 {
     "PB_1", "PB_2", "PB_3",
     "SW_1", "SW_2", "Selector_Switch_3_Left",
@@ -102,28 +102,36 @@ await Task.Delay(Timeout.Infinite);
 // Background task: continuously read from PLC
 async Task ReadPLCContinuously()
 {
-    for(String name : rideTags)
-    var myTag = new TagBool
-    {
-        Name = "Program:MainProgram.PB_2",
-        Gateway = "number",
-        Path = "1,0",
-        PlcType = PlcType.ControlLogix,
-        Protocol = Protocol.ab_eip,
-        Timeout = TimeSpan.FromMilliseconds(5000)
-    };
+    List<TagBool> rideTags = new List<TagBool>;
 
+    foreach(String currentName in rideBoolTagNames)
+    {
+        var myTag = new TagBool
+        {
+            Name = "Program:MainProgram." + currentName,
+            Gateway = "number",
+            Path = "1,0",
+            PlcType = PlcType.ControlLogix,
+            Protocol = Protocol.ab_eip,
+            Timeout = TimeSpan.FromMilliseconds(5000)
+        };
+        rideTags.Add(myTag);
+    }
+   
+    
     try
     {
-        while (true)
+        ConsoleKey keyPressed = ConsoleKey.None;
+        while (keyPressed != ConsoleKey.Escape)
         {
             try
             {
-                myTag.Read();
-                
-                
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] PB_2: {rideState.PB_2_Value}");
-                await Task.Delay(30); // Read every 30ms (PLC cycle)
+                foreach(TagBool currentTag in rideTags)
+                {
+                    currentTag.Read();
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}]", currentTag.Name, currentTag.Value);
+                    await Task.Delay(30); // Read every 30ms (PLC cycle)
+                }
             }
             catch (Exception ex)
             {
