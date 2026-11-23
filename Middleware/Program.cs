@@ -3,14 +3,98 @@ using libplctag;
 using System.Net;
 using System.Threading.Tasks;
 using System.Text.Json;
-using libplctag.DataTypes.Simple; // ai found this package for me
+using libplctag.DataTypes.Simple;
+using Microsoft.VisualBasic; // ai found this package for me
+using System.Collections.Concurrent;
 
 Console.WriteLine("Starting Ride Middleware Service...");
 
-// Global state
-var rideState = new { PB_2_Value = false };
+/*
+    *****************
+    *Global Variables*
+    ******************
+    PLC | What it does 
+    ** Inputs **
+   
+    ** Momentary Buttons **
+    PB_1 -> Ride Start 
+    PB_2 -> Ride Stop 
+    PB_3 -> Ride Reset
+   
+    ** Selector Switches **
+    SW_1 -> Ride Power
+    SW_2 -> Ride Gates
+    
+    ** Dual Selector Switches **
+    Selector_Switch_3_Left ->  Ride Restraints
+    
+    ** Estop **
+    Estop1 -> Emergency Stop
 
-// Start PLC reader in background
+    ** Outputs **
+    
+    ** Physical Outputs **
+
+    ** Motors **
+    DC_Motor_1 -> Ride's Motor
+    DC_Motor_2 -> Ride's Break
+
+    ** Tower Light**
+    Tower_Light_Green -> Ride Running
+    Tower_Light_Red -> Ride Fault
+
+    ** Traffic Light **
+    Traf_Light_A_G ->
+    Traf_Light_A_Y ->
+    TrafLightGreenB
+    TrafLighYellB
+
+    **Conveyor Light** 
+    Conveyor_Line_A_Green -> Ride Cycle Done
+
+    ** Non-Physical Outputs **
+
+    ** Timer On Delay Timers **
+    Ride_Cycle -> Times the Ride's Cycle
+    Ride_Cycle.TT -> Timing Bit
+    Ride_Cycle.DN -> Done Bit
+    Brakes -> Simulates applying the brakes
+    Brakes.TT -> Timing Bit
+    Brakes.DN -> Done
+
+    ** State Outputs/Inputs **
+    Ride_Power
+    Gates_Closed
+    Lap_Bar_Closed
+    Ride_Ready
+    Ride_Running
+    Fault_Detected
+    
+*/
+
+// String[] rideBoolTagNames =
+// {
+//     "PB_1", "PB_2", "PB_3",
+//     "SW_1", "SW_2", "Selector_Switch_3_Left",
+//     "DC_Motor_1", "DC_Motor_2",
+//     "Tower_Light_Green",  "Tower_Light_Red",
+//     "Traf_Light_A_G", "Traf_Light_A_Y",
+//     "TrafLightGreenB", "TrafLighYellB",
+//     "Conveyor_Line_A_Green",
+//     "Ride_Cycle.TT", "Ride_Cycle.DN",
+//     "Breaks.TT", "Breaks.DN",
+//     "Ride_Power", "Gates_Closed", "Lap_Bar_Closed",
+//     "Ride_Ready", "Ride_Running", "Fault_Detected"
+// };
+
+String[] rideBoolTagNames =
+{
+    "PB_1", "PB_2", "PB_3"
+   
+};
+
+ConcurrentDictionary<string, bool> rideState = new(StringComparer.OrdinalIgnoreCase);
+
 var plcTask = Task.Run(() => ReadPLCContinuously());
 
 // Start REST API
@@ -25,26 +109,35 @@ await Task.Delay(Timeout.Infinite);
 // Background task: continuously read from PLC
 async Task ReadPLCContinuously()
 {
-    var myTag = new TagBool
-    {
-        Name = "Program:MainProgram.PB_2",
-        Gateway = "number",
-        Path = "1,0",
-        PlcType = PlcType.ControlLogix,
-        Protocol = Protocol.ab_eip,
-        Timeout = TimeSpan.FromMilliseconds(5000)
-    };
+    List<TagBool> rideTags = new List<TagBool>();
 
+    foreach(String currentName in rideBoolTagNames)
+    {
+        var myTag = new TagBool
+        {
+            Name = "Program:MainProgram." + currentName,
+            Gateway = "example", // we know this works 
+            Path = "1,0",
+            PlcType = PlcType.ControlLogix,
+            Protocol = Protocol.ab_eip,
+            Timeout = TimeSpan.FromMilliseconds(5000)
+        };
+        rideTags.Add(myTag);
+    }
+    
     try
     {
-        while (true)
+        ConsoleKey keyPressed = ConsoleKey.None;
+        while (keyPressed != ConsoleKey.Escape)
         {
             try
             {
-                myTag.Read();
-                rideState = new { PB_2_Value = myTag.Value };
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] PB_2: {rideState.PB_2_Value}");
-                await Task.Delay(30); // Read every 30ms (PLC cycle)
+                foreach(TagBool currentTag in rideTags)
+                {
+                    currentTag.Read();
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}]", currentTag.Name, currentTag.Value);
+                    await Task.Delay(30); // Read every 30ms (PLC cycle)
+                }
             }
             catch (Exception ex)
             {
@@ -59,7 +152,7 @@ async Task ReadPLCContinuously()
     }
 }
 
-// REST API server
+// REST API server (vibe coded)
 void StartRestServer()
 {
     var listener = new HttpListener();
@@ -89,7 +182,7 @@ void StartRestServer()
                     continue;
                 }
 
-                if (request.Url.AbsolutePath == "/api/state")
+                if (request.Url?.AbsolutePath == "/api/state")
                 {
                     string json = JsonSerializer.Serialize(rideState);
                     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json);
