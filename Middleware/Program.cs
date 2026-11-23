@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using libplctag.DataTypes.Simple;
 using Microsoft.VisualBasic; // ai found this package for me
+using System.Collections.Concurrent;
 
 Console.WriteLine("Starting Ride Middleware Service...");
 
@@ -71,22 +72,28 @@ Console.WriteLine("Starting Ride Middleware Service...");
     
 */
 
+// String[] rideBoolTagNames =
+// {
+//     "PB_1", "PB_2", "PB_3",
+//     "SW_1", "SW_2", "Selector_Switch_3_Left",
+//     "DC_Motor_1", "DC_Motor_2",
+//     "Tower_Light_Green",  "Tower_Light_Red",
+//     "Traf_Light_A_G", "Traf_Light_A_Y",
+//     "TrafLightGreenB", "TrafLighYellB",
+//     "Conveyor_Line_A_Green",
+//     "Ride_Cycle.TT", "Ride_Cycle.DN",
+//     "Breaks.TT", "Breaks.DN",
+//     "Ride_Power", "Gates_Closed", "Lap_Bar_Closed",
+//     "Ride_Ready", "Ride_Running", "Fault_Detected"
+// };
+
 String[] rideBoolTagNames =
 {
-    "PB_1", "PB_2", "PB_3",
-    "SW_1", "SW_2", "Selector_Switch_3_Left",
-    "DC_Motor_1", "DC_Motor_2",
-    "Tower_Light_Green",  "Tower_Light_Red",
-    "Traf_Light_A_G", "Traf_Light_A_Y",
-    "TrafLightGreenB", "TrafLighYellB",
-    "Conveyor_Line_A_Green",
-    "Ride_Cycle.TT", "Ride_Cycle.DN",
-    "Breaks.TT", "Breaks.DN",
-    "Ride_Power", "Gates_Closed", "Lap_Bar_Closed",
-    "Ride_Ready", "Ride_Running", "Fault_Detected"
+    "PB_1", "PB_2", "PB_3"
+   
 };
-var rideState = new System.Collections.Concurrent.ConcurrentDictionary<string, bool>();
 
+ConcurrentDictionary<string, bool> rideState = new(StringComparer.OrdinalIgnoreCase);
 
 var plcTask = Task.Run(() => ReadPLCContinuously());
 
@@ -109,7 +116,7 @@ async Task ReadPLCContinuously()
         var myTag = new TagBool
         {
             Name = "Program:MainProgram." + currentName,
-            Gateway = "number",
+            Gateway = "example", // we know this works 
             Path = "1,0",
             PlcType = PlcType.ControlLogix,
             Protocol = Protocol.ab_eip,
@@ -117,7 +124,6 @@ async Task ReadPLCContinuously()
         };
         rideTags.Add(myTag);
     }
-   
     
     try
     {
@@ -176,7 +182,7 @@ void StartRestServer()
                     continue;
                 }
 
-                if (request.Url.AbsolutePath == "/api/state")
+                if (request.Url?.AbsolutePath == "/api/state")
                 {
                     string json = JsonSerializer.Serialize(rideState);
                     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json);
